@@ -1,0 +1,47 @@
+ion-header {
+    --background: #041d52; /* Azul DuocUC */
+  }
+  
+ion-toolbar {
+    --background: #041d52;
+}
+  
+ion-title {
+    --color: #ffc400; /* Amarillo DuocUC */
+}
+  
+.menu-container {
+    padding: 20px;
+}
+  
+h2 {
+    color: #ffc400; /* Amarillo DuocUC */
+    text-align: center;
+    margin-bottom: 20px;
+}
+  
+ion-button {
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+  
+.btn-scan-qr {
+    --background: #041d52; /* Azul DuocUC */
+    --color: #fff; /* Blanco */
+}
+  
+.btn-history {
+    --background: #041d52; /* Azul DuocUC */
+    --color: #fff; /* Blanco */
+}
+  
+.btn-logout {
+    --background: #ffc400; /* Amarillo DuocUC */
+    --color: #041d52; /* Azul */
+}
+  
+  ion-footer {
+    --background: #041d52;
+    --color: #ffc400;
+  }
+  
