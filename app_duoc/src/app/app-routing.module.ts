@@ -8,6 +8,11 @@ const routes: Routes = [
   { path: 'home-alumno', loadChildren: () => import('./pages/home-alumno/home-alumno.module').then(m => m.HomeAlumnoPageModule) },
   {path: 'historial-asistencia', loadChildren: () => import('./pages/historial-asistencia/historial-asistencia.module').then( m => m.HistorialAsistenciaPageModule)
   },
+  {
+    path: 'docenteqr',
+    loadChildren: () => import('./pages/docenteqr/docenteqr.module').then( m => m.DocenteqrPageModule)
+  },
+
 
 ];
 
