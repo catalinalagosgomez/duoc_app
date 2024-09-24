@@ -5,8 +5,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-item id="centrar">
-    <ion-button expand="block" class= "volver"(click)="abrirFecha()">Seleccionar la Fecha</ion-button>
+
+  <ion-item>
+    <ion-button expand="block" class="volver"(click)="abrirFecha()">Seleccionar la Fecha</ion-button>
     <ion-label *ngIf="fecha" slot="end">{{ fecha | date:'dd/MM/yyyy' }}</ion-label>
   </ion-item>
 
@@ -21,9 +22,18 @@
 
   <ion-item>
     <ion-label>Asignatura</ion-label>
-    <ion-select [(ngModel)]="asignatura" placeholder="Selecciona Asignatura">
+    <ion-select [(ngModel)]="asignatura" (ionChange)="onAsignaturaChange()" placeholder="Selecciona Asignatura">
       <ion-select-option *ngFor="let asignatura of asignaturas" [value]="asignatura">
         {{ asignatura }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item *ngIf="seccionesDisponibles.length > 0">
+    <ion-label>Sección</ion-label>
+    <ion-select [(ngModel)]="seccion" (ionChange)="onSeccionChange()" placeholder="Selecciona Sección">
+      <ion-select-option *ngFor="let seccion of seccionesDisponibles" [value]="seccion">
+        {{ seccion }}
       </ion-select-option>
     </ion-select>
   </ion-item>
@@ -35,12 +45,12 @@
     </ion-item>
   </ion-list>
 
-
   <div id="centrar">
     <ion-button fill="clear" class="volver" (click)="confirmar()">Listo</ion-button>
   </div>
-  
+
   <div id="centrar">
-    <ion-button  fill="clear" class="volver" [routerLink]="['/home']">Cancelar</ion-button>
+    <ion-button fill="clear" class="volver" [routerLink]="['/home']">Cancelar</ion-button>
   </div>
+
 </ion-content>
