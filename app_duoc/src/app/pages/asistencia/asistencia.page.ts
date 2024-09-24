@@ -10,16 +10,36 @@ import { Router } from '@angular/router';
 export class AsistenciaPage {
   fecha: string = '';  
   asignatura: string = '';  
-  asignaturas: string[] = ['Matemáticas', 'Historia', 'Física'];  
+  asignaturas: string[] = ['Programacion', 'Base de Datos', 'Calidad'];  
   alumnos: any[] = [    
     { nombre: 'Carlos', presente: false },
     { nombre: 'Ana', presente: false },
     { nombre: 'Beatriz', presente: false }
   ];
 
-  constructor(private alertController: AlertController, private router: Router) {}
+  mostrarCalendario: boolean = false;  
 
-  // Método que se ejecuta cuando se hace clic en el botón "Listo"
+  constructor(private alertController: AlertController, private router: Router) {
+
+    this.setFechaActual();
+  }
+
+  setFechaActual() {
+    const today = new Date().toISOString();
+    this.fecha = today;  
+  }
+
+
+  abrirFecha() {
+    this.mostrarCalendario = true;
+  }
+
+
+  cerrarFecha() {
+    this.mostrarCalendario = false;
+  }
+
+
   async confirmar() {
     const alert = await this.alertController.create({
       header: '¿Estás seguro?',
@@ -29,14 +49,12 @@ export class AsistenciaPage {
           text: 'No',
           role: 'cancel',
           handler: () => {
-            // Si elige "No", lo rediriges a la página de asistencia
             this.router.navigate(['/asistencia']);
           }
         },
         {
           text: 'Sí',
           handler: async () => {
-            // Si elige "Sí", muestra otra alerta de confirmación
             const successAlert = await this.alertController.create({
               header: 'Todo está listo',
               message: 'La asistencia ha sido registrada. Puede volver al inicio.',
@@ -44,7 +62,6 @@ export class AsistenciaPage {
                 {
                   text: 'OK',
                   handler: () => {
-                    // Redirigir al inicio
                     this.router.navigate(['/home']);
                   }
                 }
