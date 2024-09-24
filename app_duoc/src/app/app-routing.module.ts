@@ -11,7 +11,11 @@ const routes: Routes = [
   {
     path: 'docenteqr',
     loadChildren: () => import('./pages/docenteqr/docenteqr.module').then( m => m.DocenteqrPageModule)
+  },  {
+    path: 'asistencia',
+    loadChildren: () => import('./pages/asistencia/asistencia.module').then( m => m.AsistenciaPageModule)
   },
+
 
 
 ];
