@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Tomar Asistencia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-datetime displayFormat="DD/MM/YYYY" [(ngModel)]="fecha"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Asignatura</ion-label>
+    <ion-select [(ngModel)]="asignatura" placeholder="Selecciona Asignatura">
+      <ion-select-option *ngFor="let asignatura of asignaturas" [value]="asignatura">
+        {{ asignatura }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let alumno of alumnos">
+      <ion-label>{{ alumno.nombre }}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="alumno.presente"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+
+  <div id="centrar">
+    <ion-button fill="clear" class="volver" (click)="confirmar()">Listo</ion-button>
+  </div>
+  
+
+  <div id="centrar">
+    <ion-button  fill="clear" class="volver" [routerLink]="['/home']">Cancelar</ion-button>
+  </div>
+  
+</ion-content>
