@@ -41,7 +41,7 @@
   <ion-list>
     <ion-item *ngFor="let alumno of alumnos">
       <ion-label>{{ alumno.nombre }}</ion-label>
-      <ion-checkbox slot="end" [(ngModel)]="alumno.presente"></ion-checkbox>
+      <ion-label slot="end">{{ alumno.presente ? 'Presente' : 'Ausente' }}</ion-label>
     </ion-item>
   </ion-list>
 

@@ -19,51 +19,52 @@ export class AsistenciaPage {
   };  
   alumnosPorSeccion: { [key: string]: any[] } = {
     'PGY_1': [
-      { nombre: 'Carlos', presente: false },
-      { nombre: 'Ana', presente: false },
-      { nombre: 'Irene', presente: false }
+      { nombre: 'Carlos', presente: true },  
+      { nombre: 'Ana', presente: false },    
+      { nombre: 'Irene', presente: true }    
     ],
     'PGY_2': [
-      { nombre: 'Pedro', presente: false },
-      { nombre: 'Lucía', presente: false },
-      { nombre: 'Amelie', presente: false }
+      { nombre: 'Pedro', presente: false },  
+      { nombre: 'Lucía', presente: true },   
+      { nombre: 'Amelie', presente: false }  
     ],
     'PGY_3': [
-      { nombre: 'Sofía', presente: false },
-      { nombre: 'David', presente: false },
-      { nombre: 'Valentina', presente: false }
+      { nombre: 'Sofía', presente: true },   
+      { nombre: 'David', presente: false },  
+      { nombre: 'Valentina', presente: false } 
     ],
     'BD_1': [
-      { nombre: 'Juan', presente: false },
-      { nombre: 'María', presente: false },
-      { nombre: 'Noemí', presente: false }
+      { nombre: 'Juan', presente: false },   
+      { nombre: 'María', presente: true },   
+      { nombre: 'Noemí', presente: false }   
     ],
     'BD_2': [
-      { nombre: 'Roberto', presente: false },
-      { nombre: 'Claudia', presente: false },
-      { nombre: 'Lucas', presente: false }
+      { nombre: 'Roberto', presente: true },  
+      { nombre: 'Claudia', presente: false }, 
+      { nombre: 'Lucas', presente: true }     
     ],
     'BD_3': [
-      { nombre: 'Jorge', presente: false },
-      { nombre: 'Estefanía', presente: false },
-      { nombre: 'Joaquin', presente: false }
+      { nombre: 'Jorge', presente: false },   
+      { nombre: 'Estefanía', presente: false }, 
+      { nombre: 'Joaquin', presente: true }   
     ],
     'CAL_1': [
-      { nombre: 'Fernando', presente: false },
-      { nombre: 'Camila', presente: false },
-      { nombre: 'Bryan', presente: false }
+      { nombre: 'Fernando', presente: true }, 
+      { nombre: 'Camila', presente: false },  
+      { nombre: 'Bryan', presente: false }    
     ],
     'CAL_2': [
-      { nombre: 'Andrés', presente: false },
-      { nombre: 'Valeria', presente: false },
-      { nombre: 'Abigail', presente: false }
+      { nombre: 'Andrés', presente: false },  
+      { nombre: 'Valeria', presente: true },  
+      { nombre: 'Abigail', presente: false }  
     ],
     'CAL_3': [
-      { nombre: 'Gustavo', presente: false },
-      { nombre: 'Elena', presente: false },
-      { nombre: 'Benjamin', presente: false }
+      { nombre: 'Gustavo', presente: true },  
+      { nombre: 'Elena', presente: false },   
+      { nombre: 'Benjamin', presente: true }  
     ]
   };
+  
   alumnos: any[] = [];  
   mostrarCalendario: boolean = false;  
   seccionesDisponibles: string[] = [];  
