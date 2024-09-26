@@ -1,0 +1,42 @@
+.qr-scanner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .qr-scan-box {
+    width: 200px;
+    height: 200px;
+    border: 2px dashed #041d52; /* Azul DuocUC */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .qr-icon {
+    font-size: 100px; /* Tamaño del icono */
+    color: #041d52; /* Azul DuocUC */
+  }
+  
+  .qr-message {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #041d52; /* Azul DuocUC */
+  }
+  
+  .btn-scan {
+    --background: #ffc400; /* Amarillo DuocUC */
+    --color: #041d52; /* Azul DuocUC */
+    margin-bottom: 10px;
+  }
+  
+  .btn-volver {
+    --background: #041d52; /* Azul DuocUC */
+    --color: #fff; /* Blanco */
+  }
+  
