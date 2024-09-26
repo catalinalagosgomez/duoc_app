@@ -7,14 +7,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./historial-asistencia.page.scss'],
 })
 export class HistorialAsistenciaPage {
-  selectedDate: string = '';  // Asegúrate de declarar 'selectedDate' aquí
-  attendanceRecords: { date: string, status: string }[] = [];  // Arreglo para los registros de asistencia
-
+  selectedDate: string = '';  
+  attendanceRecords: { date: string, status: string }[] = [];  
   constructor(private router: Router) {}
 
-  // Método para simular la obtención de registros de asistencia
+
   fetchAttendance() {
-    // Lógica simulada para la obtención de datos
+    
     this.attendanceRecords = [
       { date: '2024-09-18', status: 'Presente' },
       { date: '2024-09-17', status: 'Ausente' },
@@ -22,7 +21,7 @@ export class HistorialAsistenciaPage {
     ];
   }
 
-  // Método para navegar a home-alumno
+ 
   navigateToHomeAlumno() {
     this.router.navigate(['/home-alumno']);
   }

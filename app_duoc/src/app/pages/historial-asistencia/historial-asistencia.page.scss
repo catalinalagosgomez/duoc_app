@@ -7,16 +7,16 @@ ion-header {
     align-items: center
   }
   .btn-historial {
-    --background: #ffc400; /* Azul DuocUC */
-    --color: #041d52; /* Blanco */
+    --background: #ffc400; 
+    --color: #041d52; 
     display: flex;
     flex-direction: column;
     align-items: center
 }
 
 .btn-volver {
-    --background:#041d52; /* Amarillo DuocUC */
-    --color: #fff; /* Azul DuocUC */
+    --background:#041d52; 
+    --color: #fff; 
     margin-top: 20px;
 }
 ion-button {

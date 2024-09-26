@@ -10,7 +10,7 @@
   .qr-scan-box {
     width: 200px;
     height: 200px;
-    border: 2px dashed #041d52; /* Azul DuocUC */
+    border: 2px dashed #041d52; 
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -19,24 +19,23 @@
   }
   
   .qr-icon {
-    font-size: 100px; /* Tamaño del icono */
-    color: #041d52; /* Azul DuocUC */
+    font-size: 100px; 
+    color: #041d52; 
   }
-  
   .qr-message {
     font-size: 16px;
     margin-bottom: 20px;
-    color: #041d52; /* Azul DuocUC */
+    color: #041d52; 
   }
   
   .btn-scan {
-    --background: #ffc400; /* Amarillo DuocUC */
-    --color: #041d52; /* Azul DuocUC */
+    --background: #ffc400; 
+    --color: #041d52; 
     margin-bottom: 10px;
   }
   
   .btn-volver {
-    --background: #041d52; /* Azul DuocUC */
-    --color: #fff; /* Blanco */
+    --background: #041d52; 
+    --color: #fff; 
   }
   

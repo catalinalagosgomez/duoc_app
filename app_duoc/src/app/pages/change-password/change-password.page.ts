@@ -15,7 +15,7 @@ export class ChangePasswordPage {
   constructor(private alertCtrl: AlertController, private router: Router) {}
 
   async changePassword() {
-    // Verificar si los campos de nueva contraseña están vacíos
+    
     if (!this.newPassword || !this.confirmNewPassword) {
       const alert = await this.alertCtrl.create({
         header: 'Error',
@@ -26,7 +26,7 @@ export class ChangePasswordPage {
       return;
     }
 
-    // Verificar si las contraseñas no coinciden
+  
     if (this.newPassword !== this.confirmNewPassword) {
       const alert = await this.alertCtrl.create({
         header: 'Error',
