@@ -1,7 +1,5 @@
 {
-  "name": "app_duoc",
-  "integrations": {
-    "capacitor": {}
-  },
+  "name": "duoc_app-1",
+  "integrations": {},
   "type": "angular"
 }
