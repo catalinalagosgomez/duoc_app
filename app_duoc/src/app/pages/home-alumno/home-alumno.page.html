@@ -5,6 +5,6 @@
     <h2>Alumnos</h2>
     <ion-button expand="block" class="btn-scan-qr" [routerLink]="['/qr-scanner']">Escanear QR</ion-button>
     <ion-button expand="block" class="btn-history" (click)="navigateTo('/historial-asistencia')">Historial de asistencia</ion-button>
-    <ion-button expand="block" class="btn-logout" (click)="logout()">Cerrar sesión</ion-button>
+    <ion-button expand="block" class="btn-logout" (click)="navigateTo('/auth')">Cerrar sesión</ion-button>
   </div>
 </ion-content>
