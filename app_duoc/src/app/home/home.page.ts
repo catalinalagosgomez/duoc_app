@@ -18,7 +18,7 @@ export class HomePage {
   // Método para cerrar sesión
   logout() {
     console.log("Cerrando sesión...");
-    this.navCtrl.navigateRoot('/login'); // Regresa a la página de login
+    this.navCtrl.navigateRoot('/auth'); // Regresa a la página de login
   }
 
 }
