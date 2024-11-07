@@ -11,6 +11,11 @@
     <h2>Docentes</h2>
     <ion-button expand="block" class="btn-generate-qr" [routerLink]="['/docenteqr']">Generar QR</ion-button>
     <ion-button expand="block" class="btn-view-attendance" (click)="navigateTo('/asistencia')">Ver asistencia</ion-button>
+    <ion-button expand="block" mode="ios" class="submit ion-margin-top" routerLink="/sign-up">
+      Registrar Alumno
+      <ion-icon slot="end" name="log-in-outline"></ion-icon>
+    </ion-button>
+
     <ion-button expand="block" class="btn-logout" (click)="logout()">Cerrar sesión</ion-button>
   </div>
 </ion-content>

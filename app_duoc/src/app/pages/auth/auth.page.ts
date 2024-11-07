@@ -30,7 +30,11 @@ export class AuthPage implements OnInit {
       const loading= await this.utilsSvc.loading();
       await loading.present();
       this.firebaseSvc.signIn(this.form.value as User).then(res=>{
-        console.log(res);
+
+        this.utilsSvc.saveInLocalStorage('user', this.form.value);
+        this.utilsSvc.routerLink('/home-alumno'); //redirecciona al menu alumno
+          this.form.reset();  console.log(res);
+
       }).catch(error=>{
         console.log(error);
 

@@ -2,6 +2,8 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { inject, Injectable } from '@angular/core';
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, updateProfile} from 'firebase/auth'
 import { User } from '../models/user.model';
+import {AngularFirestore} from '@angular/fire/compat/firestore';
+import { getFirestore, setDoc, doc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,7 @@ import { User } from '../models/user.model';
 export class FirebaseService {
 
 auth = inject(AngularFireAuth);
-
+firestore = inject(AngularFirestore);
 
 //autenticacion
 
@@ -26,5 +28,10 @@ signUp(user:User){
 updateUser(displayName:string){
   return updateProfile(getAuth().currentUser, {displayName})
   }
-}
 
+// base de datos
+//setear un documento en la base de datos
+setDocument(path: string, data: any) {
+  return setDoc(doc(getFirestore(), path), data);
+}
+}
