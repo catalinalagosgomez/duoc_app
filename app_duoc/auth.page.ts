@@ -5,7 +5,6 @@ import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
 
-
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.page.html',
@@ -17,6 +16,8 @@ export class AuthPage implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
 
+
+
   firebaseSvc= inject(FirebaseService);
   utilsSvc= inject(UtilsService);   
   
@@ -27,29 +28,29 @@ export class AuthPage implements OnInit {
       const loading = await this.utilsSvc.loading();
       await loading.present();
 
+      // Verificar si es el correo de admin
       if (this.form.value.email === 'admin@duocuc.cl' && this.form.value.password === 'admin123') {
         this.utilsSvc.saveInLocalStorage('user', this.form.value);
         this.utilsSvc.routerLink('/main');
         this.form.reset();
       } else {
-        this.login();
+        // Si no es admin, continuar con el flujo normal
+        this.firebaseSvc.signIn(this.form.value as User).then(res => {
+          this.utilsSvc.saveInLocalStorage('user', this.form.value);
+          this.utilsSvc.routerLink('/home-alumno');
+          this.form.reset();
+          console.log(res);
+        }).catch(error => {
+          console.log(error);
+          this.utilsSvc.presentToast({
+            message: error.message,
+            duration: 2500,
+            color: 'danger', 
+            icon: 'close-circle-outline'
+          });
+        });
       }
+      loading.dismiss();
     }
   }
-  async login() {
-    try {
-        const res = await this.firebaseSvc.login(this.form.value.email, this.form.value.password);
-      const uid = res.user?.uid;
-      if (uid) {
-              const role = await this.firebaseSvc.getUserRole(uid);
-              if (role === 'profesor') {
-                  this.utilsSvc.routerLink('/home');  
-              } else {
-                this.utilsSvc.routerLink('/home-alumno');  
-              }
-            }
-          } catch (error) {
-          }
-  } 
 }
-  
