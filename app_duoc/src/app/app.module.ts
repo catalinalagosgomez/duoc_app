@@ -5,29 +5,30 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
+// Firebase imports
 import { AngularFireModule } from '@angular/fire/compat';
-import { environment } from 'src/environments/environment.prod';
-
-// Firebase
-
-
-
+import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import { environment } from 'src/environments/environment';  // Usa el environment.ts correcto
 
 @NgModule({
   declarations: [
     AppComponent
-    // HistorialAsistenciaPage se elimina de aquí
+    // otras páginas/componentes si los tienes
   ],
-  imports: [BrowserModule,
-    AngularFireModule,
-    AngularFireModule.initializeApp(environment.firebaseConfig),
+  imports: [
+    BrowserModule,
     IonicModule.forRoot(),
-    AppRoutingModule],
-
-  providers: [{
-    provide: RouteReuseStrategy,
-    useClass: IonicRouteStrategy
-  }],
+    AngularFireModule.initializeApp(environment.firebaseConfig),  // Asegúrate de inicializar Firebase aquí
+    AngularFireDatabaseModule,  // Asegúrate de importar el módulo de la base de datos también
+    AppRoutingModule,
+    
+  ],
+  providers: [
+    {
+      provide: RouteReuseStrategy,
+      useClass: IonicRouteStrategy
+    }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }
