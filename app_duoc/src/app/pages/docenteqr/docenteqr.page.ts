@@ -18,7 +18,6 @@ export class DocenteqrPage {
   constructor(private db: AngularFireDatabase) {}
 
   updateSections() {
-    // Actualiza las secciones según la asignatura seleccionada
     switch (this.selectedAsignatura) {
       case 'Programacion':
         this.secciones = ['PGY_1', 'PGY_2', 'PGY_3'];
@@ -34,11 +33,9 @@ export class DocenteqrPage {
 
   async generateQR() {
     if (this.selectedAsignatura && this.selectedSeccion) {
-      // Genera un ID único basado en la asignatura y la sección
       this.qrCodeId = `${this.selectedAsignatura}-${this.selectedSeccion}`;
-      
-      // Genera el código QR como una imagen de base64
-      this.qrCodeData = await QRCode.toDataURL(this.qrCodeId);
+      const scanUrl = `https://tuapp.com/asistencia/${this.qrCodeId}`;  // URL de asistencia
+      this.qrCodeData = await QRCode.toDataURL(scanUrl);
     } else {
       alert('Por favor selecciona una asignatura y una sección.');
     }
