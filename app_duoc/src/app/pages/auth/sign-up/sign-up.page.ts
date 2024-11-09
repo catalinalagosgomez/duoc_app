@@ -23,80 +23,64 @@ export class SignUpPage implements OnInit {
   utilsSvc = inject(UtilsService);
 
   ngOnInit() {}
-
   async submit() {
     if (this.form.valid) {
-      const loading = await this.utilsSvc.loading();
+      const loading = await this.utilsSvc.loading(); 
       await loading.present();
-
-      const role = this.form.value.role;  // Obtenemos el rol del formulario
-
-      if (role === 'profesor') {
-        // Si el rol es profesor, usamos el método signUpProfesor
-        this.firebaseSvc.signUp(this.form.value as User).then(async res => {
-          await this.firebaseSvc.updateUser(this.form.value.name);
-          const uid = res.user.uid;
-          this.form.controls.uid.setValue(uid);
-          this.setProfesorInfo(uid, 'profesores'); // Guardamos en la colección profesores
-        }).catch(error => {
-       
-        }).finally(() => {
-          loading.dismiss();
-        });
-      } else {
-        // Si el rol es usuario (alumno), usamos el método signUp
-        this.firebaseSvc.signUp(this.form.value as User).then(async res => {
-          await this.firebaseSvc.updateUser(this.form.value.name);
-          const uid = res.user.uid;
-          this.form.controls.uid.setValue(uid);
-          this.setUserInfo(uid, 'users'); // Guardamos en la colección users
-        }).catch(error => {
-
-        }).finally(() => {
-          loading.dismiss();
-        });
+  
+      try {
+        const role = this.form.value.role;  
+        const uid = await this.registerUser(role);  
+  
+        if (role === 'profesor') {
+          await this.setProfesorInfo(uid, 'profesores', loading); 
+        } else {
+          await this.setUserInfo(uid, 'users', loading); 
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        loading.dismiss(); 
       }
     }
   }
-
-  async setUserInfo(uid: string, collection: string) {
-    if (this.form.valid) {
-      const loading = await this.utilsSvc.loading();
-      await loading.present();
-
-      const path = `${collection}/${uid}`;
-      const formData = { ...this.form.value };
-      delete formData.password; // Eliminamos la contraseña para no guardarla en Firestore
-
-      this.firebaseSvc.setDocument(path, formData).then(async () => {
-        this.utilsSvc.saveInLocalStorage('user', formData);
-        this.utilsSvc.routerLink('/main'); // Redirecciona al dashboard o página principal
-        this.form.reset();
-      }).catch(error => {
-      }).finally(() => {
-        loading.dismiss();
-      });
-    }
+  
+  // Método separado para el registro del usuario
+  async registerUser(role: string): Promise<string> {
+    const res = await this.firebaseSvc.signUp(this.form.value as User);
+    await this.firebaseSvc.updateUser(this.form.value.name);
+    const uid = res.user.uid;
+    this.form.controls.uid.setValue(uid);
+    return uid; 
   }
-
-  async setProfesorInfo(uid: string, collection: string) {
-    if (this.form.valid) {
-      const loading = await this.utilsSvc.loading();
-      await loading.present();
-
-      const path = `${collection}/${uid}`;
-      const formData = { ...this.form.value };
-      delete formData.password; 
-
-      this.firebaseSvc.setDocument(path, formData).then(async () => {
-        this.utilsSvc.saveInLocalStorage('user', formData);
-        this.utilsSvc.routerLink('/main'); 
-        this.form.reset();
-      }).catch(error => {
-      }).finally(() => {
-        loading.dismiss();
-      });
+  
+  async setUserInfo(uid: string, collection: string, loading: HTMLIonLoadingElement) {
+    const path = `${collection}/${uid}`;
+    const formData = { ...this.form.value };
+    delete formData.password;
+  
+    try {
+      await this.firebaseSvc.setDocument(path, formData);
+      this.utilsSvc.saveInLocalStorage('user', formData);
+      this.utilsSvc.routerLink('/main'); 
+      this.form.reset();
+    } catch (error) {
+      console.error('Error al guardar en users:', error);
     }
   }
   
+  async setProfesorInfo(uid: string, collection: string, loading: HTMLIonLoadingElement) {
+    const path = `${collection}/${uid}`;
+    const formData = { ...this.form.value };
+    delete formData.password;
+  
+    try {
+      await this.firebaseSvc.setDocument(path, formData);
+      this.utilsSvc.saveInLocalStorage('user', formData);
+      this.utilsSvc.routerLink('/main');
+      this.form.reset();
+    } catch (error) {
+      console.error('Error al guardar en profesores:', error);
+    }
   }
+}

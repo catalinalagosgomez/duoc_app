@@ -17,39 +17,64 @@ export class AuthPage implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
 
-  firebaseSvc= inject(FirebaseService);
-  utilsSvc= inject(UtilsService);   
-  
-  ngOnInit() {
-  }
+  firebaseSvc = inject(FirebaseService);
+  utilsSvc = inject(UtilsService);
+  loading = false;
+
+  ngOnInit() {}
+
   async submit() {
     if (this.form.valid) {
-      const loading = await this.utilsSvc.loading();
+      const loading = await this.utilsSvc.loading(); 
       await loading.present();
 
-      if (this.form.value.email === 'admin@duocuc.cl' && this.form.value.password === 'admin123') {
-        this.utilsSvc.saveInLocalStorage('user', this.form.value);
-        this.utilsSvc.routerLink('/main');
-        this.form.reset();
-      } else {
-        this.login();
+      try {
+        if (this.form.value.email === 'admin@duocuc.cl' && this.form.value.password === 'admin123') {
+          
+          this.utilsSvc.saveInLocalStorage('user', this.form.value);
+          this.utilsSvc.routerLink('/main');
+          this.form.reset();
+        } else {
+          await this.login(loading); 
+        }
+      } catch (error) {
+        console.error("Error en submit:", error);
+      } finally {
+        loading.dismiss();
       }
     }
   }
-  async login() {
+
+  async login(loading: HTMLIonLoadingElement) {
     try {
-        const res = await this.firebaseSvc.login(this.form.value.email, this.form.value.password);
+      
+      const res = await this.firebaseSvc.login(this.form.value.email, this.form.value.password);
       const uid = res.user?.uid;
+
       if (uid) {
-              const role = await this.firebaseSvc.getUserRole(uid);
-              if (role === 'profesor') {
-                  this.utilsSvc.routerLink('/home');  
-              } else {
-                this.utilsSvc.routerLink('/home-alumno');  
-              }
-            }
-          } catch (error) {
-          }
-  } 
+    
+        let role = localStorage.getItem(`userRole_${uid}`);
+
+        if (!role) {
+          role = await this.firebaseSvc.getUserRole(uid);
+          localStorage.setItem(`userRole_${uid}`, role);
+        }
+
+        if (role === 'profesor') {
+          this.utilsSvc.routerLink('/home');
+        } else {
+          this.utilsSvc.routerLink('/home-alumno');
+        }
+      }
+    } catch (error) {
+      console.error("Error en login:", error);
+     
+      this.utilsSvc.presentToast({
+        message: 'Error al iniciar sesión, por favor intente nuevamente.',
+        duration: 2500,
+        color: 'danger',
+        icon: 'close-circle-outline'
+      });
+    }
+  }
 }
-  
