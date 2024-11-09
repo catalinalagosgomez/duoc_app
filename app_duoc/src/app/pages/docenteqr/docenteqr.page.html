@@ -6,9 +6,31 @@
 
 <ion-content [fullscreen]="true">
   <ion-card>
-    <ion-img src="assets/icon/qr_profe.png" id="qr"></ion-img>
+    <ion-label>Seleccione Asignatura:</ion-label>
+    <ion-select [(ngModel)]="selectedAsignatura" (ionChange)="updateSections()">
+      <ion-select-option *ngFor="let asignatura of asignaturas" [value]="asignatura">
+        {{ asignatura }}
+      </ion-select-option>
+    </ion-select>
+
+    <ion-label>Seleccione Sección:</ion-label>
+    <ion-select [(ngModel)]="selectedSeccion">
+      <ion-select-option *ngFor="let seccion of secciones" [value]="seccion">
+        {{ seccion }}
+      </ion-select-option>
+    </ion-select>
+
+    <ion-button expand="full" (click)="generateQR()">Generar QR</ion-button>
+
+    <ion-card *ngIf="qrCodeData">
+      <ion-img [src]="qrCodeData" alt="QR Code"></ion-img>
+      <ion-item>
+        <ion-label class="ion-text-center">{{ qrCodeId }}</ion-label>
+      </ion-item>
+    </ion-card>
   </ion-card>
+
   <div id="centrar">
-    <ion-button  fill="clear" class="volver" [routerLink]="['/home']">Volver Al Home</ion-button>
+    <ion-button fill="clear" class="volver" [routerLink]="['/home']">Volver Al Home</ion-button>
   </div>
 </ion-content>
