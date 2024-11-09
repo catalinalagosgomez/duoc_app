@@ -1,7 +1,7 @@
 
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { inject, Injectable } from '@angular/core';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, updateProfile} from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, updateProfile, sendPasswordResetEmail} from 'firebase/auth'
 import { User} from '../models/user.model';
 import {AngularFirestore} from '@angular/fire/compat/firestore';
 import { getFirestore, setDoc, doc } from '@angular/fire/firestore';
@@ -45,4 +45,11 @@ setDocument(path: string, data: any) {
   return setDoc(doc(getFirestore(), path), data);
 }
 
+//email para reestablecer contraseña
+sendPasswordResetEmail(email: string) {
+  return sendPasswordResetEmail(getAuth(), email)
+  }
+  
 }
+
+
