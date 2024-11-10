@@ -1,34 +1,31 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { RouteReuseStrategy } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 // Firebase imports
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
-import { environment } from 'src/environments/environment';  // Usa el environment.ts correcto
+import { environment } from 'src/environments/environment';
+
+// Importación del BarcodeScanner
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 
 @NgModule({
-  declarations: [
-    AppComponent
-    // otras páginas/componentes si los tienes
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
-    AngularFireModule.initializeApp(environment.firebaseConfig),  // Asegúrate de inicializar Firebase aquí
-    AngularFireDatabaseModule,  // Asegúrate de importar el módulo de la base de datos también
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireDatabaseModule,
     AppRoutingModule,
-    
   ],
   providers: [
-    {
-      provide: RouteReuseStrategy,
-      useClass: IonicRouteStrategy
-    }
+    BarcodeScanner,  // Asegúrate de incluir BarcodeScanner aquí
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
