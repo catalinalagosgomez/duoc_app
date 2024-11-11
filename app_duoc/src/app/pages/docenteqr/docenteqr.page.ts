@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth'; // Importa el servicio de autenticación
 import QRCode from 'qrcode';
 
 @Component({
@@ -13,48 +14,48 @@ export class DocenteqrPage {
   selectedAsignatura: string | undefined;
   selectedSeccion: string | undefined;
   qrCodeData: string | null = null;
-  qrCodeId: string | null = null; // Cambiado a string para manejar el ID único de Firestore
+  qrCodeId: string | null = null;
+  profesor: string | null = null; // Variable para almacenar el nombre o ID del profesor
 
-  constructor(private firestore: AngularFirestore) {}
+  constructor(
+    private firestore: AngularFirestore,
+    private auth: AngularFireAuth // Inyecta el servicio de autenticación
+  ) {
+    // Obtén el nombre o ID del profesor que inició sesión
+    this.auth.user.subscribe(user => {
+      this.profesor = user?.displayName || user?.email || null; // Usa el nombre o email del profesor
+    });
+  }
 
   updateSections() {
-    switch (this.selectedAsignatura) {
-      case 'Programacion':
-        this.secciones = ['PGY_1', 'PGY_2', 'PGY_3'];
-        break;
-      case 'Base de Datos':
-        this.secciones = ['BD_1', 'BD_2', 'BD_3'];
-        break;
-      case 'Calidad':
-        this.secciones = ['CAL_1', 'CAL_2', 'CAL_3'];
-        break;
-    }
+    const seccionesPorAsignatura: { [key: string]: string[] } = {
+      'Programacion': ['PGY_1', 'PGY_2', 'PGY_3'],
+      'Base de Datos': ['BD_1', 'BD_2', 'BD_3'],
+      'Calidad': ['CAL_1', 'CAL_2', 'CAL_3'],
+    };
+    this.secciones = seccionesPorAsignatura[this.selectedAsignatura || ''] || [];
   }
 
   async generateQR() {
     if (this.selectedAsignatura && this.selectedSeccion) {
-      // Genera un ID único usando Firestore
-      this.qrCodeId = this.firestore.createId();  // Crea un ID único para este QR
-
-      // Genera el código QR con el ID único generado por Firestore
+      this.qrCodeId = this.firestore.createId();
       this.qrCodeData = await QRCode.toDataURL(this.qrCodeId);
-
-      // Guarda el QR con la asignatura y sección en Firestore
       await this.saveQRToFirestore(this.qrCodeId, this.selectedAsignatura, this.selectedSeccion);
     } else {
       alert('Por favor selecciona una asignatura y una sección.');
     }
   }
 
-  // Función para guardar los datos en Firestore
   private async saveQRToFirestore(qrId: string, asignatura: string, seccion: string) {
     try {
-      // Guardamos los datos en Firestore bajo una colección 'codigoQR'
+      const chileTime = new Date().toISOString();
+
       await this.firestore.collection('codigoQR').doc(qrId).set({
         asignatura: asignatura,
-        identificacion: qrId,  // Usamos el ID del QR como identificación
+        identificacion: qrId,
         seccion: seccion,
-        timestamp: new Date().toISOString(),  // Timestamp actual
+        profesor: this.profesor, // Guarda el nombre o ID del profesor a cargo
+        timestamp: chileTime,
       });
 
       console.log("Datos del QR guardados en Firestore");
