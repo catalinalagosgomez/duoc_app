@@ -9,5 +9,7 @@ export const environment = {
     storageBucket: "registerapp-bc95c.appspot.com",
     messagingSenderId: "861971416929",
     appId: "1:861971416929:web:b7e92e0207b69309506720"
+
+
   }
 };

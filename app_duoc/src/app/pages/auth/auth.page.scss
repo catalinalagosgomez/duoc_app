@@ -1,9 +1,9 @@
 .d-flex-center {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh; /* Centra verticalmente */
-    width: 100%; /* Asegura que ocupe todo el ancho */
+    align-items: flex-start;
+    min-height: 100vh;
+    width: 100%;
   }
 .submit {
   --background: #041d52;
@@ -17,4 +17,17 @@ ion-button[routerLink="/sign-up"] {
   --color: #041d52;
   margin-top: 10px;
   height: 45px;
+}
+
+.custom-margin {
+  margin-top: 10vh;  
+}
+.duoc {
+  color: #041d52;
+  font-size: 1.5rem;
+
+}
+.duoc2 {
+  color: #ffc400;
+  font-size: 1.5rem;
 }

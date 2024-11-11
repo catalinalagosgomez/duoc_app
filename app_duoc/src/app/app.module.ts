@@ -5,9 +5,10 @@ import { RouteReuseStrategy } from '@angular/router';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-// Firebase imports
+
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+
 import { environment } from 'src/environments/environment';
 
 // Importación del BarcodeScanner
@@ -20,6 +21,18 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
     IonicModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireDatabaseModule,
+
+import { environment } from 'src/environments/environment';  
+@NgModule({
+  declarations: [
+    AppComponent
+   
+  ],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(),
+    AngularFireModule.initializeApp(environment.firebaseConfig), 
+    AngularFireDatabaseModule,  
     AppRoutingModule,
   ],
   providers: [

@@ -1,16 +1,16 @@
 :host {
     display: block;
-    border-radius: 8px; /* Ajusta el valor según el nivel de redondeo deseado */
+    border-radius: 8px; 
     overflow: hidden;
   }
   
   ion-input {
     border-radius: 4px;
     
-    --border-radius: 2px; /* También puede servir en algunas configuraciones de Ionic */
+    --border-radius: 2px; 
   }
   app-custom-input {
-    display: block;       /* Asegura que cada input esté en una nueva línea */
-    margin-bottom: 16px;  /* Ajusta el valor para obtener el espacio deseado entre los inputs */
+    display: block;       
+    margin-bottom: 16px;  
   }
   
