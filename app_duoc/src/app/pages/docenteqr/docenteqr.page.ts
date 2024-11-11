@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireAuth } from '@angular/fire/compat/auth'; // Importa el servicio de autenticación
+import { AngularFireAuth } from '@angular/fire/compat/auth'; 
 import QRCode from 'qrcode';
 
 @Component({
@@ -15,15 +15,15 @@ export class DocenteqrPage {
   selectedSeccion: string | undefined;
   qrCodeData: string | null = null;
   qrCodeId: string | null = null;
-  profesor: string | null = null; // Variable para almacenar el nombre o ID del profesor
+  profesor: string | null = null; 
 
   constructor(
     private firestore: AngularFirestore,
-    private auth: AngularFireAuth // Inyecta el servicio de autenticación
+    private auth: AngularFireAuth 
   ) {
-    // Obtén el nombre o ID del profesor que inició sesión
+
     this.auth.user.subscribe(user => {
-      this.profesor = user?.displayName || user?.email || null; // Usa el nombre o email del profesor
+      this.profesor = user?.displayName || user?.email || null; 
     });
   }
 
@@ -54,7 +54,7 @@ export class DocenteqrPage {
         asignatura: asignatura,
         identificacion: qrId,
         seccion: seccion,
-        profesor: this.profesor, // Guarda el nombre o ID del profesor a cargo
+        profesor: this.profesor, 
         timestamp: chileTime,
       });
 
