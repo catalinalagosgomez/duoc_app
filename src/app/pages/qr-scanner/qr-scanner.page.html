@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Escanear Código QR</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="qr-scanner-container">
+    <!-- Selectores de asignatura y sección -->
+    <ion-item>
+      <ion-label>Asignatura</ion-label>
+      <ion-select [(ngModel)]="selectedAsignatura" (ionChange)="onSelectAsignatura()">
+        <ion-select-option *ngFor="let asignatura of asignaturas" [value]="asignatura">{{ asignatura }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item *ngIf="selectedAsignatura">
+      <ion-label>Sección</ion-label>
+      <ion-select [(ngModel)]="selectedSeccion" (ionChange)="onSelectSeccion()">
+        <ion-select-option *ngFor="let seccion of seccionesFiltradas" [value]="seccion">{{ seccion }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <div class="qr-scan-box" *ngIf="isReadyToScan">
+      <ion-icon name="qr-code-outline" class="qr-icon"></ion-icon>
+    </div>
+
+    <p>Por favor, escanee el código QR dentro del cuadro</p>
+    <ion-button expand="block" class="btn-scan" (click)="startScan()" [disabled]="!isReadyToScan">Iniciar Escaneo</ion-button>
+    <ion-button expand="block" class="btn-volver" (click)="navigateToHomeAlumno()">Volver</ion-button>
+  </div>
+</ion-content>

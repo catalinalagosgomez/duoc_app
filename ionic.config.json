@@ -1,0 +1,7 @@
+{
+  "name": "duoc_app-1",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
