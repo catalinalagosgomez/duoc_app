@@ -21,7 +21,6 @@ export class DocenteqrPage {
     private firestore: AngularFirestore,
     private auth: AngularFireAuth 
   ) {
-
     this.auth.user.subscribe(user => {
       this.profesor = user?.displayName || user?.email || null; 
     });
@@ -48,17 +47,29 @@ export class DocenteqrPage {
 
   private async saveQRToFirestore(qrId: string, asignatura: string, seccion: string) {
     try {
-      const chileTime = new Date().toISOString();
+      // Configuración de hora de Chile
+      const chileDate = new Date();
+      const chileOptions: Intl.DateTimeFormatOptions = { 
+        timeZone: 'America/Santiago', 
+        hour: '2-digit' as const, 
+        minute: '2-digit' as const, 
+        second: '2-digit' as const 
+      };
+      const horaChile = chileDate.toLocaleTimeString('es-CL', chileOptions);
+      const fechaChile = chileDate.toLocaleDateString('es-CL');
 
+
+      // Guardar en Firestore
       await this.firestore.collection('codigoQR').doc(qrId).set({
         asignatura: asignatura,
         identificacion: qrId,
         seccion: seccion,
-        profesor: this.profesor, 
-        timestamp: chileTime,
+        profesor: this.profesor,
+        fecha: fechaChile,      // Fecha en formato legible
+        hora: horaChile,        // Hora en formato legible
       });
 
-      console.log("Datos del QR guardados en Firestore");
+      console.log("Datos del QR guardados en Firestore con fecha, hora y timestamp.");
     } catch (error) {
       console.error("Error al guardar los datos del QR en Firestore", error);
       alert("Error al guardar el código QR en Firestore.");

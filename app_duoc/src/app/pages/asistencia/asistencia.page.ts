@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
@@ -11,95 +13,37 @@ export class AsistenciaPage {
   fecha: string = '';  
   asignatura: string = '';  
   seccion: string = '';  
+  profesor: string | null = null;
   asignaturas: string[] = ['Programacion', 'Base de datos', 'Calidad'];  
-  secciones: { [key: string]: string[] } = {
-    'Programacion': ['PGY_1', 'PGY_2', 'PGY_3'],
-    'Base de datos': ['BD_1', 'BD_2', 'BD_3'],
-    'Calidad': ['CAL_1', 'CAL_2', 'CAL_3']
-  };  
-  alumnosPorSeccion: { [key: string]: any[] } = {
-    'PGY_1': [
-      { nombre: 'Carlos', presente: true },  
-      { nombre: 'Ana', presente: false },    
-      { nombre: 'Irene', presente: true }    
-    ],
-    'PGY_2': [
-      { nombre: 'Pedro', presente: false },  
-      { nombre: 'Lucía', presente: true },   
-      { nombre: 'Amelie', presente: false }  
-    ],
-    'PGY_3': [
-      { nombre: 'Sofía', presente: true },   
-      { nombre: 'David', presente: false },  
-      { nombre: 'Valentina', presente: false } 
-    ],
-    'BD_1': [
-      { nombre: 'Juan', presente: false },   
-      { nombre: 'María', presente: true },   
-      { nombre: 'Noemí', presente: false }   
-    ],
-    'BD_2': [
-      { nombre: 'Roberto', presente: true },  
-      { nombre: 'Claudia', presente: false }, 
-      { nombre: 'Lucas', presente: true }     
-    ],
-    'BD_3': [
-      { nombre: 'Jorge', presente: false },   
-      { nombre: 'Estefanía', presente: false }, 
-      { nombre: 'Joaquin', presente: true }   
-    ],
-    'CAL_1': [
-      { nombre: 'Fernando', presente: true }, 
-      { nombre: 'Camila', presente: false },  
-      { nombre: 'Bryan', presente: false }    
-    ],
-    'CAL_2': [
-      { nombre: 'Andrés', presente: false },  
-      { nombre: 'Valeria', presente: true },  
-      { nombre: 'Abigail', presente: false }  
-    ],
-    'CAL_3': [
-      { nombre: 'Gustavo', presente: true },  
-      { nombre: 'Elena', presente: false },   
-      { nombre: 'Benjamin', presente: true }  
-    ]
-  };
-  
-  alumnos: any[] = [];  
-  mostrarCalendario: boolean = false;  
   seccionesDisponibles: string[] = [];  
+  alumnos: any[] = [];  
+  asistentesQR: any[] = [];  
+  claseActiva: boolean = false;
+  qrId: string | null = null;
 
-  constructor(private alertController: AlertController, private router: Router) {
-    this.setFechaActual();
-  }
-
-  setFechaActual() {
-    const today = new Date().toISOString();
-    this.fecha = today;
-  }
-
-  abrirFecha() {
-    this.mostrarCalendario = true;
-  }
-
-  cerrarFecha() {
-    this.mostrarCalendario = false;
+  constructor(
+    private firestore: AngularFirestore,
+    private auth: AngularFireAuth,
+    private alertController: AlertController,
+    private router: Router
+  ) {
+    this.auth.user.subscribe(user => {
+      this.profesor = user?.displayName || user?.email || null;
+    });
   }
 
   onAsignaturaChange() {
-    this.seccionesDisponibles = this.secciones[this.asignatura] || [];
+    const seccionesPorAsignatura = {
+      'Programacion': ['PGY_1', 'PGY_2', 'PGY_3'],
+      'Base de datos': ['BD_1', 'BD_2', 'BD_3'],
+      'Calidad': ['CAL_1', 'CAL_2', 'CAL_3']
+    };
+    this.seccionesDisponibles = seccionesPorAsignatura[this.asignatura] || [];
     this.seccion = '';
     this.alumnos = []; 
-    console.log('Asignatura seleccionada:', this.asignatura);
-    console.log('Secciones disponibles:', this.seccionesDisponibles);
+    this.claseActiva = false;
+    this.asistentesQR = [];
   }
-  
-  onSeccionChange() {
-    this.alumnos = this.alumnosPorSeccion[this.seccion] || [];
-    console.log('Sección seleccionada:', this.seccion);
-    console.log('Alumnos:', this.alumnos);
-  }
-
 
   async confirmar() {
     const alert = await this.alertController.create({
@@ -116,24 +60,96 @@ export class AsistenciaPage {
         {
           text: 'Sí',
           handler: async () => {
+            await this.guardarAsistencia();
             const successAlert = await this.alertController.create({
               header: 'Todo está listo',
               message: 'La asistencia ha sido registrada. Puede volver al inicio.',
-              buttons: [
-                {
-                  text: 'OK',
-                  handler: () => {
-                    this.router.navigate(['/home']);
-                  }
-                }
-              ]
+              buttons: [{ text: 'OK', handler: () => this.router.navigate(['/home']) }]
             });
             await successAlert.present();
           }
         }
       ]
     });
-
     await alert.present();
+  }
+
+  onSeccionChange() {
+    this.verificarClaseActiva();
+  }
+
+  verificarClaseActiva() {
+    this.firestore
+      .collection('codigoQR', ref =>
+        ref.where('asignatura', '==', this.asignatura)
+          .where('seccion', '==', this.seccion)
+      )
+      .valueChanges()
+      .subscribe((clases: any[]) => {
+        if (clases.length > 0) {
+          this.claseActiva = true;
+          this.qrId = clases[0].identificacion;
+          this.asistentesQR = clases.map(clase => ({
+            ...clase,
+            fechaHoraChile: new Date(clase.timestamp).toLocaleString('es-CL', { timeZone: 'America/Santiago' })
+          }));
+          this.obtenerAlumnos(this.qrId);
+        } else {
+          this.claseActiva = false;
+          this.asistentesQR = [];
+        }
+      }, error => {
+        console.error("Error al verificar clase activa:", error);
+      });
+  }
+
+  obtenerAlumnos(qrId: string) {
+    this.firestore
+      .collection('asistencia', ref => ref.where('qrId', '==', qrId))
+      .valueChanges()
+      .subscribe((alumnos: any[]) => {
+        this.alumnos = alumnos;
+      }, error => {
+        console.error("Error al obtener alumnos:", error);
+      });
+  }
+
+  async guardarAsistencia() {
+    if (!this.qrId) {
+      console.error("No se encontró QR ID para la clase activa.");
+      return;
+    }
+
+    const alumnosPresentes = this.alumnos.filter(alumno => alumno.presente);
+    
+    for (const alumno of alumnosPresentes) {
+      try {
+        // Configuración de fecha y hora para Chile
+        const chileDate = new Date();
+        const chileOptions: Intl.DateTimeFormatOptions = { 
+          timeZone: 'America/Santiago', 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit' 
+        };
+        const horaChile = chileDate.toLocaleTimeString('es-CL', chileOptions);
+        const fechaChile = chileDate.toLocaleDateString('es-CL');
+
+        // Guardar en Firestore
+        await this.firestore.collection('asistencia').add({
+          qrId: this.qrId,
+          alumno: alumno.nombre,
+          correo: alumno.correo,
+          asignatura: this.asignatura,
+          seccion: this.seccion,
+          profesor: this.profesor,
+          fecha: fechaChile,
+          hora: horaChile
+        });
+        console.log(`Asistencia guardada para ${alumno.nombre}`);
+      } catch (error) {
+        console.error(`Error al guardar asistencia de ${alumno.nombre}`, error);
+      }
+    }
   }
 }
