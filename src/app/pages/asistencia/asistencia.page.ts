@@ -47,6 +47,9 @@ export class AsistenciaPage {
     console.log('Secciones disponibles:', this.seccionesDisponibles);
   }
 
+  onSeccionChange() {
+    this.alumnos = [];
+  }
 
   async confirmar() {
     const alert = await this.alertController.create({
