@@ -12,7 +12,8 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { environment } from 'src/environments/environment';
 
 // Importación del BarcodeScanner
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+
 @NgModule({
   declarations: [
     AppComponent
@@ -26,7 +27,6 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
     AppRoutingModule,
   ],
   providers: [
-    BarcodeScanner,  // Asegúrate de incluir BarcodeScanner aquí
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],
