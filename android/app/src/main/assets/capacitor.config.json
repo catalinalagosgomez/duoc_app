@@ -1,5 +1,10 @@
 {
 	"appId": "io.ionic.starter",
 	"appName": "app_duoc",
-	"webDir": "www"
+	"webDir": "www",
+	"plugins": {
+		"BarcodeScanner": {
+			"camera": "granted"
+		}
+	}
 }
