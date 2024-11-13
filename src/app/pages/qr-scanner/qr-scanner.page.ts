@@ -12,6 +12,17 @@ interface Student {
   uid: string;
 }
 
+interface Asistencia {
+  uidEstudiante: string;
+  nombre: string;
+  email: string;
+  fecha: Date;
+  estado: string;
+  horaLlegada: string;
+  asignatura: string;
+  seccion: string;
+}
+
 @Component({
   selector: 'app-qr-scanner',
   templateUrl: './qr-scanner.page.html',
@@ -93,36 +104,63 @@ export class QrScannerPage {
 
   private async markAsPresent(uidEstudiante: string) {
     try {
+      // Verificar selecciones
+      if (!this.selectedAsignatura || !this.selectedSeccion) {
+        await this.showErrorAlert("Seleccione asignatura y sección");
+        return;
+      }
+
       const userDocRef = this.firestore.collection('users').doc(uidEstudiante);
       const userDoc = await userDocRef.get().toPromise();
 
-      if (userDoc.exists) {
+      if (userDoc?.exists) {
         const studentData = userDoc.data() as Student;
-        console.log("Datos del estudiante:", studentData);
+        
+        // Verificar si ya existe una asistencia para hoy
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const asistenciasRef = this.firestore.collection('asistencias');
+        const existingAsistencia = await asistenciasRef
+          .ref.where('uidEstudiante', '==', uidEstudiante)
+          .where('asignatura', '==', this.selectedAsignatura)
+          .where('seccion', '==', this.selectedSeccion)
+          .where('fecha', '>=', today)
+          .get();
 
-        if (studentData) {
-          const nombreEstudiante = studentData.name;
-          const asignatura = this.selectedAsignatura;
-          const seccion = this.selectedSeccion;
-
-          await this.firestore.collection('presencias').add({
-            uidEstudiante: uidEstudiante,
-            nombre: nombreEstudiante,
-            asignatura: asignatura,
-            seccion: seccion,
-            timestamp: new Date().toISOString(),
-          });
-
-          console.log("Presencia registrada para:", nombreEstudiante);
-          alert(`¡Presencia registrada!\n${nombreEstudiante} ha sido marcado como presente en la asignatura ${asignatura} - sección ${seccion}.`);
+        if (!existingAsistencia.empty) {
+          await this.showErrorAlert("Ya se registró asistencia para este estudiante hoy");
+          return;
         }
+
+        // Crear nuevo registro de asistencia
+        const presenciaData: Asistencia = {
+          uidEstudiante: uidEstudiante,
+          nombre: studentData.name,
+          email: studentData.email,
+          fecha: new Date(),
+          estado: 'presente',
+          horaLlegada: new Date().toLocaleTimeString(),
+          asignatura: this.selectedAsignatura,
+          seccion: this.selectedSeccion
+        };
+
+        // Guardar en la base de datos
+        await asistenciasRef.add(presenciaData);
+
+        await this.alertController.create({
+          header: '¡Éxito!',
+          message: `Asistencia registrada para ${studentData.name}`,
+          buttons: ['OK']
+        }).then(alert => alert.present());
+
       } else {
-        console.log("No se encontraron datos para este estudiante");
-        await this.showErrorAlert("No se encontraron datos para este estudiante.");
+        console.error("No se encontró el estudiante con UID:", uidEstudiante);
+        await this.showErrorAlert("Estudiante no encontrado. Verifica que el código QR sea válido.");
       }
     } catch (error) {
-      console.error("Error al marcar la presencia en Firestore", error);
-      await this.showErrorAlert("Error al marcar la presencia.");
+      console.error("Error completo:", error);
+      await this.showErrorAlert("Error al procesar la asistencia: " + error.message);
     }
   }
 
