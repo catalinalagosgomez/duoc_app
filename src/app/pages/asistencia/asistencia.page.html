@@ -1,52 +1,56 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Registro de Asistencia</ion-title>
+    <ion-title>Tomar Asistencia</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <!-- Selector de fecha -->
+<ion-content>
+
   <ion-item>
-    <ion-label>Fecha</ion-label>
-    <ion-datetime 
-      [(ngModel)]="fecha"
-      (ionChange)="cerrarFecha()"
-      [showDefaultButtons]="true"
-      (click)="abrirFecha()"
-      presentation="date">
-    </ion-datetime>
+    <ion-button expand="block" class="volver"(click)="abrirFecha()">Seleccionar la Fecha</ion-button>
+    <ion-label *ngIf="fecha" slot="end">{{ fecha | date:'dd/MM/yyyy' }}</ion-label>
   </ion-item>
 
-  <!-- Selector de asignatura -->
+  <ion-item *ngIf="mostrarCalendario">
+    <ion-datetime
+      displayFormat="DD/MM/YYYY"
+      [(ngModel)]="fecha"
+      (ionCancel)="cerrarFecha()"
+      (ionChange)="cerrarFecha()"
+    ></ion-datetime>
+  </ion-item>
+
   <ion-item>
     <ion-label>Asignatura</ion-label>
-    <ion-select [(ngModel)]="asignatura" (ionChange)="onAsignaturaChange()">
-      <ion-select-option *ngFor="let asig of asignaturas">
-        {{asig}}
+    <ion-select [(ngModel)]="asignatura" (ionChange)="onAsignaturaChange()" placeholder="Selecciona Asignatura">
+      <ion-select-option *ngFor="let asignatura of asignaturas" [value]="asignatura">
+        {{ asignatura }}
       </ion-select-option>
     </ion-select>
   </ion-item>
 
-  <!-- Selector de sección -->
-  <ion-item>
+  <ion-item *ngIf="seccionesDisponibles.length > 0">
     <ion-label>Sección</ion-label>
-    <ion-select [(ngModel)]="seccion" (ionChange)="onSeccionChange()" [disabled]="!asignatura">
-      <ion-select-option *ngFor="let sec of seccionesDisponibles">
-        {{sec}}
+    <ion-select [(ngModel)]="seccion" (ionChange)="onSeccionChange()" placeholder="Selecciona Sección">
+      <ion-select-option *ngFor="let seccion of seccionesDisponibles" [value]="seccion">
+        {{ seccion }}
       </ion-select-option>
     </ion-select>
   </ion-item>
 
-  <!-- Lista de alumnos -->
-  <ion-list *ngIf="alumnos.length > 0">
+  <ion-list>
     <ion-item *ngFor="let alumno of alumnos">
-      <ion-label>{{alumno.nombre}}</ion-label>
-      <ion-checkbox slot="end" [(ngModel)]="alumno.presente"></ion-checkbox>
+      <ion-label>{{ alumno.nombre }}</ion-label>
+      <ion-label slot="end">{{ alumno.presente ? 'Presente' : 'Ausente' }}</ion-label>
     </ion-item>
   </ion-list>
 
-  <!-- Botón de confirmación -->
-  <ion-button expand="block" (click)="confirmar()" [disabled]="!asignatura || !seccion">
-    Confirmar Asistencia
-  </ion-button>
+  <div id="centrar">
+    <ion-button fill="clear" class="volver" (click)="confirmar()">Listo</ion-button>
+  </div>
+
+  <div id="centrar">
+    <ion-button fill="clear" class="volver" [routerLink]="['/home']">Cancelar</ion-button>
+  </div>
+
 </ion-content>
