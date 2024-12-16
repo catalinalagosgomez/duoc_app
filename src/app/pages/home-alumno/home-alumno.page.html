@@ -3,12 +3,23 @@
     <ion-card class="ion-padding custom-margin">
       <div class="menu-container">
         <h2>Bienvenido, Alumno <br> {{userName}}</h2>
+
+        <!-- Botón para escanear QR -->
         <ion-button expand="block" class="btn-scan-qr" [routerLink]="['/qr-scanner']">
           Escanear QR
         </ion-button>
-        <ion-button expand="block" class="btn-history" (click)="navigateTo('/historial-asistencia')">
+
+        <!-- Botón para ver el historial de asistencia -->
+        <ion-button expand="block" class="btn-history" (click)="navigateTo('/asistencia')">
           Historial de asistencia
         </ion-button>
+
+        <!-- Botón para inscribir asignatura -->
+        <ion-button expand="block" class="btn-inscribir" (click)="navigateTo('/inscripcion-asignatura')">
+          Inscribir asignatura
+        </ion-button>
+
+        <!-- Botón para cerrar sesión -->
         <ion-button expand="block" class="btn-logout" (click)="navigateTo('/auth')">
           Cerrar sesión
         </ion-button>

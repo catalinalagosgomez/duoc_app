@@ -23,6 +23,6 @@ export class HistorialAsistenciaPage {
 
  
   navigateToHomeAlumno() {
-    this.router.navigate(['/home-alumno']);
+    this.router.navigate(['/home']);
   }
 }

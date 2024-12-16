@@ -418,12 +418,6 @@ Apache-2.0
 @firebase/webchannel-wrapper
 Apache-2.0
 
-@ionic-native/barcode-scanner
-MIT
-
-@ionic-native/core
-MIT
-
 @ionic/angular
 MIT
 

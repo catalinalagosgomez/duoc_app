@@ -20,6 +20,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/main/main.module').then( m => m.MainPageModule)
   },
   { path: 'forgot-password', loadChildren: () => import('./pages/auth/forgot-password/forgot-password.module').then(m => m.ForgotPasswordPageModule) },
+  {
+    path: 'asignatura',
+    loadChildren: () => import('./pages/asignatura/asignatura.module').then( m => m.AsignaturaPageModule)
+  },
+  {
+    path: 'inscripcion-asignatura',
+    loadChildren: () => import('./pages/inscripcion-asignatura/inscripcion-asignatura.module').then( m => m.InscripcionPageModule)
+  },
+
 
 
 ];

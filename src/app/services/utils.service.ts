@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { LoadingController, ToastController, ToastOptions } from '@ionic/angular';
+import { Firestore } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -37,4 +38,6 @@ export class UtilsService {
   getFromLocalStorage(key:string){
     return JSON.parse(localStorage.getItem(key))
   }
-}        
+
+  
+}

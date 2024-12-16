@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Inscripción Asignatura</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label>Seleccionar Asignatura</ion-label>
+      <select (change)="onAsignaturaSelect($event)">
+        <option *ngFor="let asignatura of asignaturas" [value]="asignatura.id">
+          {{ asignatura.name }}
+        </option>
+      </select>
+      
+      
+    </ion-item>
+
+   
+    <ion-item *ngIf="selectedAsignatura">
+      <ion-label>Asignatura Seleccionada: {{asignaturaNames }}</ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-button expand="full" (click)="inscribirAsignatura()">Inscribir en la Asignatura</ion-button>
+      <ion-button expand="full" (click)="logout()">volver</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

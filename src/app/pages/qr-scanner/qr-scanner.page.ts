@@ -1,70 +1,55 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { AlertController } from '@ionic/angular';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Capacitor } from '@capacitor/core';
-
-interface Student {
-  name: string;
-  email: string;
-  role: string;
-  uid: string;
-}
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { Asignatura } from 'src/app/models/asignatura.model';
 
 @Component({
   selector: 'app-qr-scanner',
   templateUrl: './qr-scanner.page.html',
   styleUrls: ['./qr-scanner.page.scss'],
 })
-export class QrScannerPage {
-  selectedAsignatura: string | null = null;
-  selectedSeccion: string | null = null;
+export class QrScannerPage implements OnInit {
   isReadyToScan: boolean = false;
   isSupported = false;
-  asignaturas = ['Programación', 'Base de Datos', 'Calidad'];
-  secciones = {
-    'Programación': ['PGY_1', 'PGY_2', 'PGY_3'],
-    'Base de Datos': ['BD_1', 'BD_2', 'BD_3'],
-    'Calidad': ['CAL_1', 'CAL_2', 'CAL_3']
-  };
-  seccionesFiltradas: string[] = [];
+  asignaturas: { id: string; name: string }[] = []; // Lista de asignaturas
+  selectedAsignatura: string | null = null; // Almacena la asignatura seleccionada
+  asignaturaNames: string[] = []; // Lista de nombres de asignaturas
+  qrData: string | null = null;
 
   constructor(
     private router: Router,
     private alertController: AlertController,
-    private firestore: AngularFirestore,
+    private firebaseService: FirebaseService,
   ) {}
 
+  private asignaturasMap: Map<string, string> = new Map();
+
   async ngOnInit() {
-    if (!Capacitor.isNativePlatform()) {
-      console.log('El escaneo de códigos no está soportado en la plataforma web.');
-      await this.showErrorAlert("Esta función sólo está disponible en dispositivos móviles.");
-      return;
-    }
-
-    const result = await BarcodeScanner.isSupported();
-    this.isSupported = result.supported;
+    this.asignaturas = await this.firebaseService.getAsignaturas();
+    this.asignaturas.forEach(asignatura => {
+      this.asignaturasMap.set(asignatura.id, asignatura.name);
+    });
   }
+  
 
-  onSelectAsignatura() {
-    if (this.selectedAsignatura) {
-      this.seccionesFiltradas = this.secciones[this.selectedAsignatura];
-      this.selectedSeccion = null;
+  async onAsignaturaSelect() {
+    const asignaturaId = [...this.asignaturasMap.entries()]
+      .find(([, name]) => name === this.selectedAsignatura)?.[0];
+    if (asignaturaId) {
       this.updateIsReadyToScan();
+      await this.startScan(asignaturaId);
     }
   }
+  
 
-  onSelectSeccion() {
-    this.updateIsReadyToScan();
-  }
+  isScanning: boolean = false;
 
-  updateIsReadyToScan() {
-    this.isReadyToScan = !!this.selectedAsignatura && !!this.selectedSeccion;
-  }
-
-  async startScan() {
-    if (this.isReadyToScan && this.isSupported) {
+  async startScan(asignaturaId: string) {
+    this.isScanning = true;
+    try {
       const granted = await this.requestPermissions();
       if (!granted) {
         await this.showPermissionAlert();
@@ -73,57 +58,52 @@ export class QrScannerPage {
 
       const { barcodes } = await BarcodeScanner.scan();
       if (barcodes.length > 0) {
-        console.log("Código QR escaneado:", barcodes[0].rawValue);
-        this.markAsPresent(barcodes[0].rawValue);
-      } else {
-        console.log("Escaneo cancelado o sin datos.");
-      }
-    } else {
-      await this.showErrorAlert("Seleccione asignatura y sección antes de escanear.");
-    }
-  }
+        this.qrData = barcodes[0].rawValue;
+        console.log('Código QR escaneado:', this.qrData);
 
-  private async requestPermissions(): Promise<boolean> {
-    const { camera } = await BarcodeScanner.requestPermissions();
-    if (camera !== 'granted' && camera !== 'limited') {
-      await this.showCameraAccessAlert();
-    }
-    return camera === 'granted' || camera === 'limited';
-  }
+        // Lógica para marcar la asistencia
+        const resultado = await this.firebaseService.marcarAsistencia(
+          asignaturaId,
+          this.qrData
+        );
 
-  private async markAsPresent(uidEstudiante: string) {
-    try {
-      const userDocRef = this.firestore.collection('users').doc(uidEstudiante);
-      const userDoc = await userDocRef.get().toPromise();
-
-      if (userDoc.exists) {
-        const studentData = userDoc.data() as Student;
-        console.log("Datos del estudiante:", studentData);
-
-        if (studentData) {
-          const nombreEstudiante = studentData.name;
-          const asignatura = this.selectedAsignatura;
-          const seccion = this.selectedSeccion;
-
-          await this.firestore.collection('presencias').add({
-            uidEstudiante: uidEstudiante,
-            nombre: nombreEstudiante,
-            asignatura: asignatura,
-            seccion: seccion,
-            timestamp: new Date().toISOString(),
+        if (resultado) {
+          await this.showSuccessAlert('Asistencia marcada correctamente.');
+          
+          // Redirigir a la página de Asistencia y pasar el estado de la asistencia
+          this.router.navigate(['/asistencia'], {
+            queryParams: { mensaje: 'Asistencia marcada correctamente en la clase correspondiente.' },
           });
-
-          console.log("Presencia registrada para:", nombreEstudiante);
-          alert(`¡Presencia registrada!\n${nombreEstudiante} ha sido marcado como presente en la asignatura ${asignatura} - sección ${seccion}.`);
+        } else {
+          await this.showErrorAlert(
+            'No se pudo marcar la asistencia. Verifique el código QR.'
+          );
         }
       } else {
-        console.log("No se encontraron datos para este estudiante");
-        await this.showErrorAlert("No se encontraron datos para este estudiante.");
+        console.log('Escaneo cancelado o sin datos.');
       }
     } catch (error) {
-      console.error("Error al marcar la presencia en Firestore", error);
-      await this.showErrorAlert("Error al marcar la presencia.");
+      console.error('Error durante el escaneo:', error);
+      await this.showErrorAlert('Error durante el escaneo.');
+    } finally {
+      this.isScanning = false;
     }
+  }
+
+  // Método para mostrar alerta de éxito
+  async showSuccessAlert(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Éxito',
+      message: message,
+      buttons: ['Cerrar'],
+    });
+    await alert.present();
+  }
+
+  // Métodos para permisos y alertas
+  private async requestPermissions(): Promise<boolean> {
+    const { camera } = await BarcodeScanner.requestPermissions();
+    return camera === 'granted' || camera === 'limited';
   }
 
   async showErrorAlert(message: string) {
@@ -144,16 +124,8 @@ export class QrScannerPage {
     await alert.present();
   }
 
-  async showCameraAccessAlert() {
-    const alert = await this.alertController.create({
-      header: 'Acceso a la cámara necesario',
-      message: 'Esta aplicación necesita acceder a la cámara para escanear el código QR. Por favor, permita el acceso en la siguiente ventana.',
-      buttons: ['OK']
-    });
-    await alert.present();
-  }
-
-  navigateToHomeAlumno() {
-    this.router.navigate(['/home-alumno']);
+  // Actualizar el estado de 'isReadyToScan' cuando se seleccione una asignatura
+  updateIsReadyToScan() {
+    this.isReadyToScan = !!this.selectedAsignatura; // Si se selecciona una asignatura, se habilita el escaneo
   }
 }

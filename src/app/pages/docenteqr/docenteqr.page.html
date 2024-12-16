@@ -1,36 +1,43 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>docenteqr</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title class="ion-text-center">Generar Código QR</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-card>
-    <ion-label>Seleccione Asignatura:</ion-label>
-    <ion-select [(ngModel)]="selectedAsignatura" (ionChange)="updateSections()">
-      <ion-select-option *ngFor="let asignatura of asignaturas" [value]="asignatura">
-        {{ asignatura }}
+<ion-content class="ion-padding">
+  <ion-card class="card-style">
+    <ion-card-header>
+      <ion-card-title class="ion-text-center">Seleccionar Asignatura</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      
+      <!-- Lista de asignaturas -->
+    <ion-select [(ngModel)]="selectedAsignatura">
+      <ion-select-option *ngFor="let asignatura of asignaturas" [value]="asignatura.name">
+        {{ asignatura.name }}
       </ion-select-option>
     </ion-select>
 
-    <ion-label>Seleccione Sección:</ion-label>
-    <ion-select [(ngModel)]="selectedSeccion">
-      <ion-select-option *ngFor="let seccion of secciones" [value]="seccion">
-        {{ seccion }}
-      </ion-select-option>
-    </ion-select>
+<!-- Mostrar el nombre de la asignatura seleccionada -->
+  <p>Asignatura seleccionada: {{ selectedAsignatura }}</p>
 
-    <ion-button expand="full" (click)="generateQR()">Generar QR</ion-button>
-
-    <ion-card *ngIf="qrCodeData">
-      <ion-img [src]="qrCodeData" alt="QR Code"></ion-img>
-      <ion-item>
-        <ion-card-subtitle>ID: {{ qrCodeId }}</ion-card-subtitle>
-      </ion-item>
-    </ion-card>
+      <ion-button 
+        expand="block" 
+        (click)="generateQR()" 
+        [disabled]="!selectedAsignatura">
+        Generar Código QR
+      </ion-button>
+      <div class="bttn-vlvr"  >
+        <ion-button class="bttn-vlvr" (click)="volver()" expand="block" >
+          Volver
+        </ion-button>
+      </div>
+    </ion-card-content>
   </ion-card>
 
-  <div id="centrar">
-    <ion-button fill="clear" class="volver" [routerLink]="['/home']">Volver Al Home</ion-button>
+  <div *ngIf="qrCodeData" class="qr-container ion-text-center">
+    <h2 class="qr-title">Código QR Generado</h2>
+    <img [src]="qrCodeData" alt="Código QR" class="qr-image" />
   </div>
 </ion-content>
